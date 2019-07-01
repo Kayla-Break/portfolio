@@ -1,0 +1,48 @@
+ALTER PROC [dbo].[SurveyInstances_SelectPaginatedByDate_Details]
+					@pageIndex INT
+					,@pageSize INT
+					,@DateCreated DATETIME2(7)
+AS
+/*
+	DECLARE
+				 @pageIndex int = 0
+				,@pageSize int = 10
+				,@DateCreated DATETIME2(7) = '2019-06-13'
+
+	EXECUTE [dbo].[SurveyInstances_SelectPaginatedByDate_Details]
+                 @pageIndex
+				,@pageSize
+				,@DateCreated
+*/ 
+BEGIN
+
+		DECLARE  @offset int = @pageIndex * @pageSize
+
+		SELECT
+				 SI.[Id]
+				,S.[Name] AS SurveyName
+				,SI.[Id] AS InstanceId
+				,UP.[FirstName]
+				,UP.[LastName]
+				,UP.[AvatarUrl]
+				,U.[Email]
+				,SI.[DateCreated]
+				,[TotalCount] = COUNT(1) OVER()
+		
+		FROM
+				 [dbo].[Surveys] AS S
+				 JOIN [dbo].[SurveyInstances] AS SI
+				 ON S.[Id] = SI.[SurveyId]
+				 LEFT JOIN [dbo].[Users] AS U
+				 ON SI.[UserId] = U.[Id]
+				 LEFT JOIN [dbo].[UserProfiles] AS UP
+				 ON U.[Id] = UP.[UserId]
+		WHERE	SI.[DateCreated]>=@DateCreated and SI.[DateCreated]<dateadd(dd,1,@DateCreated)
+
+
+		ORDER BY SI.[DateCreated] DESC
+
+		OFFSET @offSet ROWS
+
+		FETCH NEXT @pageSize ROWS ONLY
+END
