@@ -1,0 +1,73 @@
+ALTER PROC [dbo].[Addresses_Insert]
+				@UserId INT,
+				@AddressTypeId INT ,
+				@LineOne NVARCHAR(225),
+				@LineTwo NVARCHAR(225),
+				@City NVARCHAR(225),
+				@Zip NVARCHAR(50) = NULL,
+				@StateId INT,
+				@Latitude FLOAT,
+				@Longitude FLOAT,
+				@Id INT OUTPUT 
+AS
+/* ------ Test Code ------
+
+			DECLARE 
+					@Id INT = 0 
+
+			DECLARE 
+					@UserId INT = '1235',
+					@AddressTypeId INT = '1235',
+					@LineOne NVARCHAR(225) = '1235 Water Bottle',
+					@LineTwo NVARCHAR(225) = 'Street de agua',
+					@City NVARCHAR(225) = 'Alphs',
+					@Zip NVARCHAR(50) = 'Swish',
+					@StateId INT = '456',
+					@Latitude FLOAT = '89.235',
+					@Longitude FLOAT = '45.698'
+
+			EXEC dbo.Addresses_Insert
+					@UserId,
+					@AddressTypeId,
+					@LineOne,
+					@LineTwo,
+					@City,
+					@Zip,
+					@StateId,
+					@Latitude,
+					@Longitude,
+					@Id OUTPUT 
+
+			SELECT * FROM dbo.Addresses WHERE Id = @Id;
+
+*/
+
+
+BEGIN
+
+			INSERT INTO 
+					[dbo].[Addresses] (
+								[UserId],
+								[AddressTypeId],
+								[LineOne],
+								[LineTwo],
+								[City],
+								[Zip],
+								[StateId],
+								[Latitude],
+								[Longitude]
+					) VALUES (
+								@UserId,
+								@AddressTypeId,
+								@LineOne,
+								@LineTwo,
+								@City,
+								@Zip,
+								@StateId,
+								@Latitude,
+								@Longitude
+					);
+
+			SET @Id = SCOPE_IDENTITY()
+
+END 
