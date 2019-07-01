@@ -1,0 +1,33 @@
+ALTER PROC [dbo].[ResourcesAndCategories_Insert_Multiple]
+		@ResourcesAndCategoriesList as ResourcesAndCategoriesListType READONLY
+
+AS
+/*
+		DECLARE @_ResourcesAndCategoriesList as ResourcesAndCategoriesListType
+
+		INSERT INTO @_ResourcesAndCategoriesList
+				(	
+					ResourceId
+					,ResourceCategoryId
+				)
+		VALUES
+				(
+					1,	
+					8
+				)
+
+		SELECT * FROM dbo.ResourcesAndCategories
+		EXEC [dbo].[ResourcesAndCategories_Insert_Multiple] @_ResourcesAndCategoriesList
+		SELECT * FROM dbo.ResourcesAndCategories
+*/
+BEGIN
+		INSERT INTO [dbo].[ResourcesAndCategories]
+			(
+				[ResourceId]
+				,[ResourceCategoryId]
+			)
+		SELECT 
+				ResourceId,
+				ResourceCategoryId
+		 FROM @ResourcesAndCategoriesList
+END
