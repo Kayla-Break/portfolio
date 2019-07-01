@@ -1,0 +1,95 @@
+  [Route("api/addresses")]
+    [ApiController]
+    public class AddressApiController : BaseApiController
+    {
+        private IAddressService _addressService;
+        private IAuthenticationService<int> _authService;
+
+        public AddressApiController(IAuthenticationService<int> authService, IAddressService addressService, ILogger<AddressApiController> logger) : base(logger)
+        {
+            _addressService = addressService;
+            _authService = authService;
+        }
+
+
+        [HttpDelete("{id:int}")]
+        public ActionResult<SuccessResponse> Delete(int id)
+        {
+            try
+            {
+                _addressService.Delete(id);
+                SuccessResponse resp = new SuccessResponse();
+                return Ok200(resp);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.ToString());
+                return StatusCode(500, new ErrorResponse(ex.Message));
+
+            }
+        }
+
+        [HttpPut("{id:int}")]
+        public ActionResult<SuccessResponse> Update(int id, AddressUpdateRequest model)
+        {
+            try
+            {
+                if (id == model.Id)
+                {
+                    _addressService.Update(model);
+                    SuccessResponse resp = new SuccessResponse();
+                    return Ok200(resp);
+                }
+                else
+                {
+                    return NotFound404(new ErrorResponse("Bad Request: Body Id does not match entity"));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.ToString());
+                return StatusCode(500, new ErrorResponse(ex.Message));
+            }
+        }
+
+        [HttpPost]
+        public ActionResult<ItemResponse<int>> Insert(AddressAddRequest model)
+        {
+            try
+            {
+                int id = _addressService.Insert(model, _authService.GetCurrentUserId());
+                ItemResponse<int> resp = new ItemResponse<int>();
+                resp.Item = id;
+                return Created201(resp);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.ToString());
+                return StatusCode(500, new ErrorResponse(ex.Message));
+            }
+        }
+
+        [HttpGet("{id:int}")]
+        public ActionResult<ItemResponse<Address>> GetById(int id)
+        {
+            try
+            {
+                Address address = _addressService.GetById(id);
+                if (address == null)
+                {
+                    return NotFound404(new ErrorResponse("No item found"));
+                }
+                else
+                {
+                    ItemResponse<Address> resp = new ItemResponse<Address>();
+                    resp.Item = address;
+                    return Ok200(resp);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.ToString());
+                return StatusCode(500, new ErrorResponse(ex.Message));
+            }
+        }
+   }
